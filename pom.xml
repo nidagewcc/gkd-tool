@@ -5,6 +5,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>gkd-image-merge-tool</module>
+		<module>gkd-excel-tool</module>
 	</modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
