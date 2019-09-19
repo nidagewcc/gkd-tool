@@ -1,5 +1,7 @@
 package com.gkd.image.merge;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -49,28 +51,36 @@ public class MergeController {
 
         // 取集合中前两张照片测试下拼接效果
         try {
-            BufferedImage image1 = thumbnail(images[0].getPath(), 300, 300, false);
-            BufferedImage image2 = thumbnail(images[1].getPath(), 300, 300, false);
-            BufferedImage image3 = thumbnail(images[2].getPath(), 300, 300, false);
+            // 自己实现缩略图方法
+//            BufferedImage image1 = thumbnail(images[0].getPath(), 300, 300, false);
+//            BufferedImage image2 = thumbnail(images[1].getPath(), 300, 300, false);
+//            BufferedImage image3 = thumbnail(images[2].getPath(), 300, 300, false);
+
+            // 使用google的Thumbnailator，竟然没有自己定义的方法生成的缩略图清楚！！！！
+            assert images != null;
+            BufferedImage image1 = Thumbnails.of(images[0]).size(300, 300).keepAspectRatio(false).asBufferedImage();
+            BufferedImage image2 = Thumbnails.of(images[1]).size(300, 300).keepAspectRatio(false).asBufferedImage();
+            BufferedImage image3 = Thumbnails.of(images[2]).size(300, 300).keepAspectRatio(false).asBufferedImage();
 
             if (image1 != null && image2 != null && image3 != null) {
 
                 // 水平合并
                 int w = image1.getWidth() + image2.getWidth();
-                BufferedImage destImage1 = new BufferedImage(600, 600, BufferedImage.TYPE_INT_RGB);
+                int h = image1.getHeight() + image3.getHeight();
+                BufferedImage destImage1 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
-                int[] imageArrayOne1 = new int[300 * 300];
-                int[] imageArrayOne2 = new int[300 * 300];
-                int[] imageArrayOne3 = new int[300 * 300];
-                imageArrayOne1 = image1.getRGB(0, 0, 300, 300, imageArrayOne1, 0, 300);
-                imageArrayOne2 = image2.getRGB(0, 0, 300, 300, imageArrayOne2, 0, 300);
-                imageArrayOne3 = image3.getRGB(0, 0, 300, 300, imageArrayOne3, 0, 300);
+                int[] imageArrayOne1 = new int[image1.getWidth() * image1.getHeight()];
+                int[] imageArrayOne2 = new int[image2.getWidth() * image2.getHeight()];
+                int[] imageArrayOne3 = new int[image3.getWidth() * image3.getHeight()];
+                imageArrayOne1 = image1.getRGB(0, 0, image1.getWidth(), image1.getHeight(), imageArrayOne1, 0, image1.getWidth());
+                imageArrayOne2 = image2.getRGB(0, 0, image2.getWidth(), image2.getHeight(), imageArrayOne2, 0, image2.getWidth());
+                imageArrayOne3 = image3.getRGB(0, 0, image3.getWidth(), image3.getHeight(), imageArrayOne3, 0, image3.getWidth());
 
-                destImage1.setRGB(0, 0, 300, 300, imageArrayOne1, 0, 300);
-                destImage1.setRGB(300, 0, 300, 300, imageArrayOne2, 0, 300);
-                destImage1.setRGB(0, 300, 300, 300, imageArrayOne3, 0, 300);
+                destImage1.setRGB(0, 0, image1.getWidth(), image1.getHeight(), imageArrayOne1, 0, image1.getWidth());
+                destImage1.setRGB(image1.getWidth(), 0, image2.getWidth(), image2.getHeight(), imageArrayOne2, 0, image2.getWidth());
+                destImage1.setRGB(0, image1.getHeight(), image3.getWidth(), image3.getHeight(), imageArrayOne3, 0, image3.getWidth());
 
-                File targetImg = new File(targetPath + "\\水平和纵向合并.jpg");
+                File targetImg = new File(targetPath + "\\水平和纵向合并_thumbnailator.jpg");
 
                 ImageIO.write(destImage1, "jpg", targetImg);
             }
@@ -78,26 +88,6 @@ public class MergeController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-//        int wx = 0, wy = 0;
-//        for (int i = 0; i < imgs.length; i++) {
-//            BufferedImage img = imgs[i];
-//            int w1 = img.getWidth();
-//            int h1 = img.getHeight();
-//            // 从图片中读取RGB
-//            int[] ImageArrayOne = new int[w1 * h1];
-//            ImageArrayOne = img.getRGB(0, 0, w1, h1, ImageArrayOne, 0, w1); // 逐行扫描图像中各个像素的RGB到数组中
-//            if (isHorizontal) { // 水平方向合并
-//                destImage.setRGB(wx, 0, w1, h1, ImageArrayOne, 0, w1); // 设置上半部分或左半部分的RGB
-//            } else { // 垂直方向合并
-//                destImage.setRGB(0, wy, w1, h1, ImageArrayOne, 0, w1); // 设置上半部分或左半部分的RGB
-//            }
-//            wx += w1;
-//            wy += h1;
-//        }
-
-
     }
 
 
