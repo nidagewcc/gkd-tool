@@ -8,14 +8,14 @@ import javafx.stage.Stage;
  * @date 2019/9/18
  * @description
  */
-public class MergeMain extends Application {
+public class MergeMain {
 
 
-    @Override
-    public void start(Stage stage) throws Exception {
-
-        // TODO JavaFx
-    }
+//    @Override
+//    public void start(Stage stage) throws Exception {
+//
+//        // TODO JavaFx
+//    }
 
     // 拼图工具初步实现功能设想：
     // 1. 单张图片缩略图生成

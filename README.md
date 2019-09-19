@@ -69,4 +69,4 @@ public String export1(HttpServletRequest request, HttpServletResponse response) 
 
 ##### 合并效果：
 
-![image](https://github.com/nidagewcc/images/blob/master/最终.png)
+![image](https://github.com/nidagewcc/images/blob/master/最终.png?raw=true)

@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -12,9 +13,92 @@ import java.util.Arrays;
  * @date 2019/9/18
  * @description
  */
-public class ImageController {
+public class MergeController {
 
     private static final String DOT_SYMBOL = ".";
+
+
+    public static void main(String[] args) {
+        String imagePath = "D:\\BaiduNetdiskDownload\\大杂烩壁纸200";
+
+        // 生成拼图目录
+        String targetPath = "D:\\BaiduNetdiskDownload\\大杂烩壁纸200\\target";
+
+        File file = new File(imagePath);
+        System.out.println(file.getPath());
+        System.out.println(file.getName());
+        System.out.println(file.isDirectory());
+
+        String types = Arrays.toString(ImageIO.getReaderFormatNames()).toLowerCase();
+        System.out.println(types);
+
+        File[] images = file.listFiles(f ->
+                types.contains(f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase()));
+
+        if (images != null) {
+            Arrays.stream(images).forEach(img -> System.out.println(img.getName()));
+        } else {
+            System.err.printf("该目录[%s]下不存图片类型文件！！！\r\n", imagePath);
+        }
+
+        File targetFile = new File(targetPath);
+        if (!targetFile.exists()) {
+            targetFile.mkdirs();
+            System.out.printf("target目录不存在，创建目录[%s]", targetPath);
+        }
+
+        // 取集合中前两张照片测试下拼接效果
+        try {
+            BufferedImage image1 = thumbnail(images[0].getPath(), 300, 300, false);
+            BufferedImage image2 = thumbnail(images[1].getPath(), 300, 300, false);
+            BufferedImage image3 = thumbnail(images[2].getPath(), 300, 300, false);
+
+            if (image1 != null && image2 != null && image3 != null) {
+
+                // 水平合并
+                int w = image1.getWidth() + image2.getWidth();
+                BufferedImage destImage1 = new BufferedImage(600, 600, BufferedImage.TYPE_INT_RGB);
+
+                int[] imageArrayOne1 = new int[300 * 300];
+                int[] imageArrayOne2 = new int[300 * 300];
+                int[] imageArrayOne3 = new int[300 * 300];
+                imageArrayOne1 = image1.getRGB(0, 0, 300, 300, imageArrayOne1, 0, 300);
+                imageArrayOne2 = image2.getRGB(0, 0, 300, 300, imageArrayOne2, 0, 300);
+                imageArrayOne3 = image3.getRGB(0, 0, 300, 300, imageArrayOne3, 0, 300);
+
+                destImage1.setRGB(0, 0, 300, 300, imageArrayOne1, 0, 300);
+                destImage1.setRGB(300, 0, 300, 300, imageArrayOne2, 0, 300);
+                destImage1.setRGB(0, 300, 300, 300, imageArrayOne3, 0, 300);
+
+                File targetImg = new File(targetPath + "\\水平和纵向合并.jpg");
+
+                ImageIO.write(destImage1, "jpg", targetImg);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+//        int wx = 0, wy = 0;
+//        for (int i = 0; i < imgs.length; i++) {
+//            BufferedImage img = imgs[i];
+//            int w1 = img.getWidth();
+//            int h1 = img.getHeight();
+//            // 从图片中读取RGB
+//            int[] ImageArrayOne = new int[w1 * h1];
+//            ImageArrayOne = img.getRGB(0, 0, w1, h1, ImageArrayOne, 0, w1); // 逐行扫描图像中各个像素的RGB到数组中
+//            if (isHorizontal) { // 水平方向合并
+//                destImage.setRGB(wx, 0, w1, h1, ImageArrayOne, 0, w1); // 设置上半部分或左半部分的RGB
+//            } else { // 垂直方向合并
+//                destImage.setRGB(0, wy, w1, h1, ImageArrayOne, 0, w1); // 设置上半部分或左半部分的RGB
+//            }
+//            wx += w1;
+//            wy += h1;
+//        }
+
+
+    }
 
 
     /**
@@ -25,7 +109,7 @@ public class ImageController {
      * @param h         缩略图高
      * @param force     是否强制按照宽高设定值生成缩略图（false：则生成最佳比例缩略图）
      */
-    public Image thumbnailImage(String imagePath, int w, int h, boolean force) throws IOException {
+    private static BufferedImage thumbnail(String imagePath, int w, int h, boolean force) throws IOException {
 
         // 检查图片文件是否存在
         File imageFile = new File(imagePath);
@@ -76,9 +160,8 @@ public class ImageController {
      * @param isHorizontal true代表水平合并，fasle代表垂直合并
      * @param imgs         待合并的图片数组
      * @return
-     * @throws IOException
      */
-    private static BufferedImage mergeImage(boolean isHorizontal, BufferedImage[] imgs) throws IOException {
+    private BufferedImage merge(boolean isHorizontal, BufferedImage[] imgs) {
         // 生成新图片
         BufferedImage destImage = null;
         // 计算新图片的长和高
