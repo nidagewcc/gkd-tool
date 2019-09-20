@@ -11,6 +11,10 @@ import javafx.stage.Stage;
 public class MergeMain {
 
 
+    public static void main(String[] args) {
+    }
+
+
 //    @Override
 //    public void start(Stage stage) throws Exception {
 //
