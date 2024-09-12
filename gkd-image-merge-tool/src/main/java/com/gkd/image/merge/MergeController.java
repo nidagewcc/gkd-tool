@@ -1,14 +1,14 @@
 package com.gkd.image.merge;
 
-import net.coobird.thumbnailator.Thumbnails;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author Weishuo Zhang
@@ -20,11 +20,11 @@ public class MergeController {
     private static final String DOT_SYMBOL = ".";
 
 
-    public static void main(String[] args) {
-        String imagePath = "D:\\BaiduNetdiskDownload\\大杂烩壁纸200";
+    public static void main(String[] args) throws IOException {
+        String imagePath = "D:\\images\\九妹";
 
         // 生成拼图目录
-        String targetPath = "D:\\BaiduNetdiskDownload\\大杂烩壁纸200\\target";
+        String targetPath = "D:\\images\\九妹\\target";
 
         File file = new File(imagePath);
         System.out.println(file.getPath());
@@ -49,45 +49,59 @@ public class MergeController {
             System.out.printf("target目录不存在，创建目录[%s]", targetPath);
         }
 
-        // 取集合中前两张照片测试下拼接效果
-        try {
-            // 自己实现缩略图方法
-//            BufferedImage image1 = thumbnail(images[0].getPath(), 300, 300, false);
-//            BufferedImage image2 = thumbnail(images[1].getPath(), 300, 300, false);
-//            BufferedImage image3 = thumbnail(images[2].getPath(), 300, 300, false);
-
-            // 使用google的Thumbnailator，竟然没有自己定义的方法生成的缩略图清楚！！！！
-            assert images != null;
-            BufferedImage image1 = Thumbnails.of(images[0]).size(300, 300).keepAspectRatio(false).asBufferedImage();
-            BufferedImage image2 = Thumbnails.of(images[1]).size(300, 300).keepAspectRatio(false).asBufferedImage();
-            BufferedImage image3 = Thumbnails.of(images[2]).size(300, 300).keepAspectRatio(false).asBufferedImage();
-
-            if (image1 != null && image2 != null && image3 != null) {
-
-                // 水平合并
-                int w = image1.getWidth() + image2.getWidth();
-                int h = image1.getHeight() + image3.getHeight();
-                BufferedImage destImage1 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-
-                int[] imageArrayOne1 = new int[image1.getWidth() * image1.getHeight()];
-                int[] imageArrayOne2 = new int[image2.getWidth() * image2.getHeight()];
-                int[] imageArrayOne3 = new int[image3.getWidth() * image3.getHeight()];
-                imageArrayOne1 = image1.getRGB(0, 0, image1.getWidth(), image1.getHeight(), imageArrayOne1, 0, image1.getWidth());
-                imageArrayOne2 = image2.getRGB(0, 0, image2.getWidth(), image2.getHeight(), imageArrayOne2, 0, image2.getWidth());
-                imageArrayOne3 = image3.getRGB(0, 0, image3.getWidth(), image3.getHeight(), imageArrayOne3, 0, image3.getWidth());
-
-                destImage1.setRGB(0, 0, image1.getWidth(), image1.getHeight(), imageArrayOne1, 0, image1.getWidth());
-                destImage1.setRGB(image1.getWidth(), 0, image2.getWidth(), image2.getHeight(), imageArrayOne2, 0, image2.getWidth());
-                destImage1.setRGB(0, image1.getHeight(), image3.getWidth(), image3.getHeight(), imageArrayOne3, 0, image3.getWidth());
-
-                File targetImg = new File(targetPath + "\\水平和纵向合并_thumbnailator.jpg");
-
-                ImageIO.write(destImage1, "jpg", targetImg);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        // 使用ImageIO的read方法从文件读取图像
+        BufferedImage[] bufferedImages = new BufferedImage[images.length];
+        for (int i = 0; i < images.length; i++) {
+            File f = images[i];
+            BufferedImage image = ImageIO.read(f);
+            bufferedImages[i] = image;
         }
+
+        BufferedImage merge = mergeImages(Arrays.asList(bufferedImages), 1920, 1080);
+
+        File targetImg = new File(targetPath + "\\1.jpg");
+
+        ImageIO.write(merge, "jpg", targetImg);
+
+        // 取集合中前两张照片测试下拼接效果
+        //        try {
+        //            // 自己实现缩略图方法
+        //            //            BufferedImage image1 = thumbnail(images[0].getPath(), 300, 300, false);
+        //            //            BufferedImage image2 = thumbnail(images[1].getPath(), 300, 300, false);
+        //            //            BufferedImage image3 = thumbnail(images[2].getPath(), 300, 300, false);
+        //
+        //            // 使用google的Thumbnailator，竟然没有自己定义的方法生成的缩略图清楚！！！！
+        //            assert images != null;
+        //            BufferedImage image1 = Thumbnails.of(images[0]).size(300, 300).keepAspectRatio(false).asBufferedImage();
+        //            BufferedImage image2 = Thumbnails.of(images[1]).size(300, 300).keepAspectRatio(false).asBufferedImage();
+        //            BufferedImage image3 = Thumbnails.of(images[2]).size(300, 300).keepAspectRatio(false).asBufferedImage();
+        //
+        //            if (image1 != null && image2 != null && image3 != null) {
+        //
+        //                // 水平合并
+        //                int w = image1.getWidth() + image2.getWidth();
+        //                int h = image1.getHeight() + image3.getHeight();
+        //                BufferedImage destImage1 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        //
+        //                int[] imageArrayOne1 = new int[image1.getWidth() * image1.getHeight()];
+        //                int[] imageArrayOne2 = new int[image2.getWidth() * image2.getHeight()];
+        //                int[] imageArrayOne3 = new int[image3.getWidth() * image3.getHeight()];
+        //                imageArrayOne1 = image1.getRGB(0, 0, image1.getWidth(), image1.getHeight(), imageArrayOne1, 0, image1.getWidth());
+        //                imageArrayOne2 = image2.getRGB(0, 0, image2.getWidth(), image2.getHeight(), imageArrayOne2, 0, image2.getWidth());
+        //                imageArrayOne3 = image3.getRGB(0, 0, image3.getWidth(), image3.getHeight(), imageArrayOne3, 0, image3.getWidth());
+        //
+        //                destImage1.setRGB(0, 0, image1.getWidth(), image1.getHeight(), imageArrayOne1, 0, image1.getWidth());
+        //                destImage1.setRGB(image1.getWidth(), 0, image2.getWidth(), image2.getHeight(), imageArrayOne2, 0, image2.getWidth());
+        //                destImage1.setRGB(0, image1.getHeight(), image3.getWidth(), image3.getHeight(), imageArrayOne3, 0, image3.getWidth());
+        //
+        //                File targetImg = new File(targetPath + "\\水平和纵向合并_thumbnailator.jpg");
+        //
+        //                ImageIO.write(destImage1, "jpg", targetImg);
+        //            }
+        //
+        //        } catch (IOException e) {
+        //            e.printStackTrace();
+        //        }
     }
 
 
@@ -151,7 +165,7 @@ public class MergeController {
      * @param imgs         待合并的图片数组
      * @return
      */
-    private BufferedImage merge(boolean isHorizontal, BufferedImage[] imgs) {
+    private static BufferedImage merge(boolean isHorizontal, BufferedImage[] imgs) {
         // 生成新图片
         BufferedImage destImage = null;
         // 计算新图片的长和高
@@ -192,6 +206,64 @@ public class MergeController {
             wy += h1;
         }
         return destImage;
+    }
+
+    private static final Random RANDOM = new Random();
+
+    /**
+     * 随机合并图片，图片按比例缩小以适应画布，无重叠
+     *
+     * @param imgs         待合并的图片数组
+     * @param canvasWidth  画布宽度
+     * @param canvasHeight 画布高度
+     * @return
+     */
+    private static BufferedImage mergeImages(List<BufferedImage> imgs, int canvasWidth, int canvasHeight) {
+        double totalImageArea = 0;
+        for (BufferedImage img : imgs) {
+            totalImageArea += img.getWidth() * img.getHeight();
+        }
+
+        double scale = Math.min((double) canvasWidth * canvasHeight / totalImageArea, 1.0);
+
+        BufferedImage mergedImage = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = mergedImage.createGraphics();
+
+        List<Rectangle> occupiedSpaces = new ArrayList<>();
+        for (BufferedImage img : imgs) {
+            int imgWidth = (int) (img.getWidth() * scale);
+            int imgHeight = (int) (img.getHeight() * scale);
+            boolean placed = false;
+            while (!placed) {
+                int x = getRandomX(canvasWidth - imgWidth, occupiedSpaces);
+                int y = getRandomY(canvasHeight - imgHeight, occupiedSpaces);
+
+                boolean intersects = false;
+                for (Rectangle space : occupiedSpaces) {
+                    if (space.intersects(new Rectangle(x, y, imgWidth, imgHeight))) {
+                        intersects = true;
+                        break;
+                    }
+                }
+
+                if (!intersects) {
+                    g2d.drawImage(img, x, y, imgWidth, imgHeight, null);
+                    occupiedSpaces.add(new Rectangle(x, y, imgWidth, imgHeight));
+                    placed = true;
+                }
+            }
+        }
+
+        g2d.dispose();
+        return mergedImage;
+    }
+
+    private static int getRandomX(int max, List<Rectangle> occupiedSpaces) {
+        return RANDOM.nextInt(max);
+    }
+
+    private static int getRandomY(int max, List<Rectangle> occupiedSpaces) {
+        return RANDOM.nextInt(max);
     }
 
 

@@ -1,8 +1,5 @@
 package com.gkd.image.merge;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-
 /**
  * @author Weishuo Zhang
  * @date 2019/9/18
