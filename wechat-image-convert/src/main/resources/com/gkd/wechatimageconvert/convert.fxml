@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.gkd.wechatimageconvert.ConvertController">
-    <!-- 输入目录选择部分 -->
-    <HBox alignment="CENTER" spacing="10"/>
+<?import javafx.scene.layout.*?>
+<GridPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.gkd.wechatimageconvert.ConvertController" stylesheets="@styles.css" vgap="10" hgap="10">
+    <VBox alignment="CENTER" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <!-- 输入目录选择部分 -->
+        <HBox alignment="CENTER" spacing="10">
+            <Button onAction="#chooseInputDirectory" text="选择" styleClass="button"/>
+            <Label text="选择输入目录:" styleClass="label"/>
+            <Label fx:id="inputDirPathLabel" text="输入目录" styleClass="label"/>
+        </HBox>
 
-    <!-- 输出目录选择部分 -->
-    <HBox alignment="CENTER" spacing="10"/>
+        <!-- 输出目录选择部分 -->
+        <HBox alignment="CENTER" spacing="10">
+            <Button onAction="#chooseOutputDirectory" text="选择" styleClass="button"/>
+            <Label text="选择输出目录:" styleClass="label"/>
+            <Label fx:id="outputDirPathLabel" text="目标目录" styleClass="label"/>
+        </HBox>
 
-    <!-- 转换按钮 -->
-    <Button layoutX="107.0" layoutY="179.0" onAction="#convertFiles" text="批量转换"/>
-    <Button layoutX="119.0" layoutY="128.0" onAction="#chooseOutputDirectory" text="选择"/>
-    <Label fx:id="inputDirPathLabel" layoutX="174.0" layoutY="59.0" text="输入目录"/>
-    <Label layoutX="36.0" layoutY="132.0" text="选择输出目录:"/>
-    <Button layoutX="119.0" layoutY="55.0" onAction="#chooseInputDirectory" text="选择"/>
-    <Label layoutX="36.0" layoutY="59.0" text="选择输入目录:"/>
-    <Label fx:id="outputDirPathLabel" layoutX="174.0" layoutY="132.0" text="目标目录"/>
-    <ProgressBar fx:id="progressBar" layoutX="35.0" layoutY="256.0" prefHeight="23.0" prefWidth="537.0" progress="0.0"/>
-    <Label layoutX="280.0" layoutY="230.0" text="转换进度"/>
-    <Label fx:id="fileCountLabel" layoutX="248.0" layoutY="94.0" prefHeight="15.0" prefWidth="122.0" text="文件数量"/>
-    <Label fx:id="fileSizeLabel" layoutX="419.0" layoutY="94.0" prefHeight="15.0" prefWidth="144.0" text="文件大小"/>
-    <Button layoutX="119.0" layoutY="90.0" mnemonicParsing="false" onAction="#calcFileStorage" text="计算大小"/>
-    <ProgressIndicator fx:id="progressIndicator" layoutX="267.0" layoutY="164.0" prefHeight="53.0" prefWidth="82.0"
-                       visible="false"/>
+        <!-- 计算大小按钮 -->
+        <Button mnemonicParsing="false" onAction="#calcFileStorage" text="计算大小" styleClass="button"/>
+        <Label prefHeight="15.0" prefWidth="122.0" text="文件数量" styleClass="label"/>
+        <Label fx:id="fileCountLabel" prefHeight="15.0" prefWidth="144.0" text="0"
+               styleClass="label"/> <!-- 添加 fileCountLabel -->
 
-</AnchorPane>
+        <!-- 批量转换按钮 -->
+        <Button onAction="#convertFiles" text="批量转换" styleClass="button"/>
+    </VBox>
+
+    <!-- 进度条和进度指示器 -->
+    <VBox alignment="CENTER" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <ProgressBar fx:id="progressBar" prefHeight="23.0" prefWidth="537.0" progress="0.0"/>
+        <Label text="转换进度" styleClass="label"/>
+        <ProgressIndicator fx:id="progressIndicator" prefHeight="53.0" prefWidth="82.0" visible="false"/>
+    </VBox>
+</GridPane>

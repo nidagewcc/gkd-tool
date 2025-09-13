@@ -101,7 +101,7 @@ public class ConvertController {
 
                 // 更新 UI 需要在 JavaFX 应用程序线程中进行
                 Platform.runLater(() -> {
-                    fileCountLabel.setText("文件数量：" + fileCount);
+                    fileCountLabel.setText(String.valueOf(fileCount));
                     fileSizeLabel.setText("文件大小：" + totalStorage);
                     progressIndicator.setVisible(false);  // 隐藏加载指示器
                     progressIndicator.setProgress(1);  // 设置为完成
